@@ -1,16 +1,16 @@
 "use client";
 import Head from "next/head";
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
+import { ethers } from "ethers";
+
 import {
   createProduction,
   setProductName,
   setQuantityProduced,
   setDepartureDate,
   setArrivalDate,
-  setAllowList,
   getProductionByNumber,
   getProductionsByCompany,
-  removeAddressList,
 } from "@/services/Harvesting.services";
 
 import { GenericModal } from "../components";
@@ -24,7 +24,6 @@ export default function Defi() {
   const [showModalSetDepartureDate, setShowModalSetDepartureDate] =
     useState(false);
   const [showModalSetArrivalDate, setShowModalSetArrivalDate] = useState(false);
-  const [showModalSetNewAddress, setShowModalSetNewAddress] = useState(false);
 
   //Local State
   const [prodNumber, setProdNumber] = useState("");
@@ -43,18 +42,18 @@ export default function Defi() {
   const [arrDate, setArrDate] = useState("");
 
   const [productionsByCompany, setProductionsByCompany] = useState([]);
-  const [productionsByNumber, setProductionsByNumber] = useState("");
+  const [addressCompany, setAddressCompany] = useState("");
 
-  const [addresses, setAddresses] = useState("");
+  const [productionsByNumber, setProductionsByNumber] = useState([]);
+  const [addressWallet, setAddressWallet] = useState("");
+  const [addressNumber, setAddressNumber] = useState("");
 
-  const [result, setResult] = useState(null);
   const [message, setMessage] = useState("");
 
   const handleCreateProduction = async () => {
     try {
       const result = await createProduction(prodNumber, prodName);
       setMessage("Production created successfully!");
-      console.log("Production created:", result);
     } catch (error) {
       console.error(error);
       setMessage("Failed to create production: " + error.message);
@@ -65,7 +64,6 @@ export default function Defi() {
     try {
       const result = await setProductName(pdtNumber, pdtName);
       setMessage("Product Name successfully!");
-      console.log("Product Name:", result);
     } catch (error) {
       console.error(error);
       setMessage("Failed to create product: " + error.message);
@@ -76,7 +74,6 @@ export default function Defi() {
     try {
       const result = await setQuantityProduced(qtdNumber, qtd);
       setMessage("Qtd Product successfully!");
-      console.log("Qtd Product:", result);
     } catch (error) {
       console.error(error);
       setMessage("Failed to create qtd product: " + error.message);
@@ -87,7 +84,6 @@ export default function Defi() {
     try {
       const result = await setDepartureDate(depDateNumber, depDate);
       setMessage("Departure date set successfully!");
-      console.log("Departure date set:", result);
     } catch (error) {
       console.error(error);
       setMessage("Failed to set departure date: " + error.message);
@@ -98,124 +94,88 @@ export default function Defi() {
     try {
       const result = await setArrivalDate(arrDateNumber, arrDate);
       setMessage("Arrival date set successfully!");
-      console.log("Arrival date set:", result);
     } catch (error) {
       console.error(error);
       setMessage("Failed to set arrival date: " + error.message);
     }
   };
 
-  const handleSetAllows = async (addresses) => {
+  const listProductionsByCompany = async (address) => {
     try {
-      const listAddress = [];
-      listAddress.push(addresses);
-      const result = await setAllowList(listAddress);
-      setResult(result);
-      setMessage("Allow list set successfully!");
-      console.log("Allow list set:", result);
-    } catch (error) {
-      console.error(error);
-      setMessage("Failed to set allow list: " + error.message);
-    }
-  };
+      const result = await getProductionsByCompany(address);
 
-  useEffect(() => {
-    listProductionsByCompany();
-  }, []);
-
-  const listProductionsByCompany = async () => {
-    try {
-      debugger
-      const addressWallet = localStorage.getItem("wallet");
-      const production = await getProductionsByCompany(addressWallet);
-      debugger;
-      setProductionsByCompany(production);
+      setProductionsByCompany(result);
     } catch (error) {
       console.error(error);
       setMessage("Failed to fetch productions: " + error.message);
     }
   };
 
-  const handleGetProductionsByNumber = async () => {
+  const listProductionByNumber = async (address, productionNumber) => {
     try {
-      const production = await getProductionByNumber(companyAddress);
-      setProductionsByNumber(production);
+      const result = await getProductionByNumber(address, productionNumber);
+
+      setProductionsByNumber(result);
     } catch (error) {
       console.error(error);
       setMessage("Failed to fetch productions: " + error.message);
     }
   };
 
-  const handleRemoveAddress = async (addressToRemove) => {
-    try {
-      const result = await removeAddressList(addressToRemove);
-      setMessage("Address removed successfully!");
-      console.log("Address removed:", result);
-    } catch (error) {
-      console.error(error);
-      setMessage("Failed to remove address: " + error.message);
-    }
-  };
-
-  const TableList = useCallback(() => {
-    if (productionsByCompany.length > 0) {
-      return productionsByCompany.map((production, index) => (
-        <tr key={index}>
-          <td>
-            <button
-              type="button"
-              className="btn btn-outline-primary"
-              onClick={() =>
-                handleSelectProduction(production.productionNumber)
-              }
-            >
-              {production.productionName}
-            </button>
-          </td>
-          <td>
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={() => handleRemoveAddress(production.productionNumber)}
-            >
-              Remove
-            </button>
-          </td>
-        </tr>
-      ));
-    } else if (productionsByNumber.length > 0) {
-      return productionsByCompany.map((production, index) => (
-        <tr key={index}>
-          <td>
-            <button
-              type="button"
-              className="btn btn-outline-primary"
-              onClick={() =>
-                handleSelectProduction(production.productionNumber)
-              }
-            >
-              {production.productionName}
-            </button>
-          </td>
-          <td>
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={() => handleRemoveAddress(production.productionNumber)}
-            >
-              Remove
-            </button>
-          </td>
-        </tr>
-      ));
+  const TableListCompany = () => {
+    if (productionsByCompany?.length > 0) {
+      return productionsByCompany.map((production, index) =>
+        handleMountTdTable(index, production)
+      );
     } else {
-      return <p>Sem resultado da pessquisa...</p>;
+      return (
+        <div>
+          <p>No result</p>
+        </div>
+      );
     }
-  }, [productionsByCompany, productionsByNumber]);
-
-  const handleSelectProduction = (e) => {
-    setSelectedProduction(e.target.value);
   };
+
+  const TableListNumber = () => {
+    if (productionsByNumber?.length > 0) {
+      return productionsByNumber.map((production, index) =>
+        handleMountTdTable(index, production)
+      );
+    } else {
+      return (
+        <div>
+          <p>No result</p>
+        </div>
+      );
+    }
+  };
+
+  const handleMountTdTable = (index, production) => {
+    return (
+      <tr key={index}>
+        <td>{production?.company}</td>
+        <td>{production?.productName}</td>
+        <td>{ethers.BigNumber.from(production?.harvest).toString()}</td>
+        <td>
+          {ethers.BigNumber.from(production?.productionNumber).toNumber()}
+        </td>
+        <td>
+          {ethers.BigNumber.from(production?.quantityProduced).toNumber()}
+        </td>
+        <td>
+          {new Date(
+            ethers.BigNumber.from(production?.DepartureDate).toNumber() * 1000
+          ).toString()}
+        </td>
+        <td>
+          {new Date(
+            ethers.BigNumber.from(production?.ArrivalDate).toNumber() * 1000
+          ).toString()}
+        </td>
+      </tr>
+    );
+  };
+
   return (
     <>
       <Head>
@@ -262,13 +222,6 @@ export default function Defi() {
           onClick={() => setShowModalSetArrivalDate(true)}
         >
           Add Arrival Date
-        </button>
-
-        <button
-          className="btn btn-primary"
-          onClick={() => setShowModalSetNewAddress(true)}
-        >
-          Add Address
         </button>
       </div>
 
@@ -442,53 +395,107 @@ export default function Defi() {
         </div>
       </GenericModal>
 
-      <GenericModal
-        showModal={showModalSetNewAddress}
-        setShowModal={setShowModalSetNewAddress}
-        onSubmit={handleSetAllows}
-        title="Add Address Wallet"
-      >
-        <div>
-          <div className="mb-3">
-            <label htmlFor="addresses" className="form-label">
-              Address:
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="addresses"
-              value={addresses}
-              onChange={(e) => setAddresses(e.target.value)}
-            />
-          </div>
-        </div>
-      </GenericModal>
-
       <br />
       <br />
       <br />
 
-      <div className="col-lg-4 d-flex flex-column align-items-center">
-        <div className="mb-3 d-flex align-items-center">
-          <label htmlFor="productionSearch" className="form-label me-2">
-            Search
-          </label>
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="d-flex align-items-center">
           <input
             type="text"
             id="productionSearch"
-            className="form-control"
-            placeholder="Enter production number"
-            value={productionsByNumber}
-            onChange={handleGetProductionsByNumber}
+            className="form-control form-control-sm me-2"
+            style={{ width: "500px" }}
+            placeholder="Enter Address"
+            value={addressCompany}
+            onChange={(e) => setAddressCompany(e.target.value)}
           />
+          <button
+            className="btn btn-primary"
+            onClick={() => listProductionsByCompany(addressCompany)}
+            style={{ verticalAlign: "middle" }}
+          >
+            Search
+          </button>
         </div>
-        <div className="table-responsive">
-          <table className="table">
-            <tbody>
-              <TableList />
-            </tbody>
-          </table>
+      </div>
+
+      <br />
+
+      <div
+        className="table-responsive mt-2"
+        style={{ width: "90%", margin: "0 auto" }}
+      >
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Product Name</th>
+              <th>Harvest</th>
+              <th>Production Number</th>
+              <th>Quantity Produced</th>
+              <th>Departure Date</th>
+              <th>Arrival Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <TableListCompany />
+          </tbody>
+        </table>
+      </div>
+
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="d-flex align-items-center">
+          <input
+            type="text"
+            id="productionSearch"
+            className="form-control form-control-sm me-2"
+            style={{ width: "200px" }}
+            placeholder="Enter Address"
+            value={addressWallet}
+            onChange={(e) => setAddressWallet(e.target.value)}
+          />
+          <input
+            type="text"
+            id="productionSearch"
+            className="form-control form-control-sm me-2"
+            style={{ width: "200px" }}
+            placeholder="Enter Number"
+            value={addressNumber}
+            onChange={(e) => setAddressNumber(e.target.value)}
+          />
+          <button
+            className="btn btn-primary"
+            onClick={() => listProductionByNumber(addressWallet, addressNumber)}
+            style={{ verticalAlign: "middle" }}
+          >
+            Search
+          </button>
         </div>
+      </div>
+
+      <br />
+
+      <div
+        className="table-responsive mt-2"
+        style={{ width: "90%", margin: "0 auto" }}
+      >
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Product Name</th>
+              <th>Harvest</th>
+              <th>Production Number</th>
+              <th>Quantity Produced</th>
+              <th>Departure Date</th>
+              <th>Arrival Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <TableListNumber />
+          </tbody>
+        </table>
       </div>
 
       <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">

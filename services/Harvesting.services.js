@@ -39,7 +39,11 @@ export async function createProduction(productionNumber, productName) {
           gasLimit: GAS_LIMIT,
         }
       );
-      console.log(result);
+      if (result) {
+        alert(
+          "Production created successfully! \n Transaction: " + result?.hash
+        );
+      }
     }
   } catch (error) {
     throw new Error("Failed to create production: " + error.message);
@@ -59,7 +63,11 @@ export async function setProductName(productionNumber, newProductName) {
           gasLimit: GAS_LIMIT,
         }
       );
-      console.log(result);
+      if (result) {
+        alert(
+          "Product Name created successfully! \n Transaction: " + result?.hash
+        );
+      }
     }
   } catch (error) {
     throw new Error("Failed to set product name: " + error.message);
@@ -76,7 +84,12 @@ export async function setQuantityProduced(productionNumber, quantityProduced) {
         productionNumber,
         quantityProduced
       );
-      console.log(result);
+      if (result) {
+        alert(
+          "Quantity Produced created successfully! \n Transaction: " +
+            result?.hash
+        );
+      }
     }
   } catch (error) {
     throw new Error("Failed to set quantity produced: " + error.message);
@@ -93,7 +106,11 @@ export async function setDepartureDate(productionNumber, quantitySent) {
         productionNumber,
         quantitySent
       );
-      console.log(result);
+      if (result) {
+        alert(
+          "Departure Date created successfully! \n Transaction: " + result?.hash
+        );
+      }
     }
   } catch (error) {
     throw new Error("Failed to set departure date: " + error.message);
@@ -110,7 +127,11 @@ export async function setArrivalDate(productionNumber, amountReceived) {
         productionNumber,
         amountReceived
       );
-      console.log(result);
+      if (result) {
+        alert(
+          "Arrival Date created successfully! \n Transaction: " + result?.hash
+        );
+      }
     }
   } catch (error) {
     throw new Error("Failed to set arrival date: " + error.message);
@@ -124,7 +145,11 @@ export async function setAllowList(addresses) {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
       const result = await contract.contractsetAllowList(addresses);
-      console.log(result);
+      if (result) {
+        alert(
+          "Allow List created successfully! \n Transaction: " + result?.hash
+        );
+      }
     }
   } catch (error) {
     throw new Error("Failed to set allow list: " + error.message);
@@ -138,7 +163,10 @@ export async function getProductionsByCompany(companyAddress) {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
       const result = await contract.getProductionsByCompany(companyAddress);
-      console.log(result);
+      if (!result?.length > 0) {
+        alert("No productions found for this company");
+      }
+
       return result;
     }
   } catch (error) {
@@ -156,7 +184,10 @@ export async function getProductionByNumber(companyAddress, productionNumber) {
         companyAddress,
         productionNumber
       );
-      console.log(result);
+      if (!result?.length > 0) {
+        alert("No productions found for this company");
+      }
+
       return result;
     }
   } catch (error) {
@@ -171,7 +202,9 @@ export async function removeAddressList(addresses) {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
       const result = await contract.removeAddressList(addresses);
-      console.log(result);
+      if (result) {
+        alert("Address removed successfully!");
+      }
       return result;
     }
   } catch (error) {
