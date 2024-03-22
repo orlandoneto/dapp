@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
 import ABI from "./ABI.json";
 
-const CONTRACT_ADDRESS = "0x58FdA51449837Ac04f9543329E1EDFB66326CcBD";
+debugger;
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const GAS_LIMIT = 600000;
 
 export async function doLogin() {
