@@ -14,7 +14,10 @@ import {
 } from "@/services/Harvesting.services";
 
 import { GenericModal } from "../components";
-import { formatTimeFromSeconds, converterBigNumberParaHora } from "../utils";
+import {
+  formatTimestampDataHora,
+  formatarDataHora,
+} from "../utils";
 
 export default function Defi() {
   //Modals State
@@ -129,7 +132,7 @@ export default function Defi() {
           <td>{production?.company}</td>
           <td>{production?.productName}</td>
           <td>
-            {formatTimeFromSeconds(
+            {formatTimestampDataHora(
               ethers.BigNumber.from(production?.harvest).toString()
             )}
           </td>
@@ -139,8 +142,8 @@ export default function Defi() {
           <td>
             {ethers.BigNumber.from(production?.quantityProduced).toNumber()}
           </td>
-          <td>{converterBigNumberParaHora(production?.DepartureDate)}</td>
-          <td>{converterBigNumberParaHora(production?.ArrivalDate)}</td>
+          <td>{formatarDataHora(production?.DepartureDate)}</td>
+          <td>{formatarDataHora(production?.ArrivalDate)}</td>
         </tr>
       ));
     } else {
@@ -153,13 +156,14 @@ export default function Defi() {
   };
 
   const TableListNumber = () => {
+    console.log(productionsByNumber);
     if (productionsByNumber?.length > 0) {
       return (
         <tr>
           <td>{productionsByNumber?.company}</td>
           <td>{productionsByNumber?.productName}</td>
           <td>
-            {formatTimeFromSeconds(
+            {formatTimestampDataHora(
               ethers.BigNumber.from(productionsByNumber?.harvest).toString()
             )}
           </td>
@@ -174,11 +178,9 @@ export default function Defi() {
             ).toNumber()}
           </td>
           <td>
-            {converterBigNumberParaHora(productionsByNumber?.DepartureDate)}
+            {formatarDataHora(productionsByNumber?.DepartureDate)}
           </td>
-          <td>
-            {converterBigNumberParaHora(productionsByNumber?.ArrivalDate)}
-          </td>
+          <td>{formatarDataHora(productionsByNumber?.ArrivalDate)}</td>
         </tr>
       );
     } else {
@@ -198,8 +200,8 @@ export default function Defi() {
       </Head>
 
       <div className="d-flex flex-column justify-content-center">
-        <h1 className="display-5 fw-bold text-body-emphasis lh-1 mb-3">
-          Web Depp AgroSync
+        <h1 className="display-10 fw-bold text-body-emphasis lh-1 mb-3 text-center">
+          Dashboard Web Depp AgroSync
         </h1>
       </div>
 
@@ -512,14 +514,14 @@ export default function Defi() {
         </table>
       </div>
 
-      <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+      <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 px-3 my-4 border-top">
         <p className="col-md-4 mb-0 text-body-secondary">
           &copy; 2024 Web Depp AgroSync, Inc
         </p>
-        <ul className="nav col-md-4 justify-content-end">
+        <ul className="nav col-md-4 justify-content-end ">
           <li className="nav-item">
             <a href="/" className="nav-link px-2 text-body-secondary">
-              Create
+              Back Home
             </a>
           </li>
           <li className="nav-item">

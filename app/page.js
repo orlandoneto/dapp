@@ -11,7 +11,7 @@ export default function Home() {
 
   const btnLoginClick = async () => {
     try {
-      const account = await doLogin();
+      await doLogin();
       setMessage("Carregando...");
       setTimeout(() => {
         push("/defi");
@@ -40,7 +40,7 @@ export default function Home() {
             />
           </div>
           <div className="col-lg-6">
-            <h1 className="display-5 fw-bold text-body-emphasis lh-1 mb-3">
+            <h1 className="display-8 fw-bold text-body-emphasis lh-1 mb-3">
               Web Depp AgroSync
             </h1>
             <p className="lead">On-chain AgroSync</p>
@@ -63,12 +63,12 @@ export default function Home() {
                 Connect with MetaMask
               </button>
             </div>
+            <p className="message">{message}</p>
           </div>
-          <p className="message">{message}</p>
         </div>
       </div>
 
-      <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+      <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 px-3 my-4 border-top">
         <p className="col-md-4 mb-0 text-body-secondary">
           &copy; 2024 Web Depp AgroSync, Inc
         </p>

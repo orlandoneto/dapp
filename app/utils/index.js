@@ -1,2 +1,2 @@
-export { formatTimeFromSeconds } from "./utils";
-export { converterBigNumberParaHora } from "./utils";
+export { formatTimestampDataHora } from "./utils";
+export { formatarDataHora } from "./utils";
