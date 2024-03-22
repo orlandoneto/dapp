@@ -187,7 +187,6 @@ export async function getProductionByNumber(companyAddress, productionNumber) {
       if (!result?.length > 0) {
         alert("No productions found for this company");
       }
-
       return result;
     }
   } catch (error) {

@@ -12,7 +12,7 @@ export default function Home() {
   const btnLoginClick = async () => {
     try {
       const account = await doLogin();
-      setMessage(account);
+      setMessage("Carregando...");
       setTimeout(() => {
         push("/defi");
       }, 2000);

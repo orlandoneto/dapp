@@ -52,7 +52,7 @@ export default function Defi() {
 
   const handleCreateProduction = async () => {
     try {
-      const result = await createProduction(prodNumber, prodName);
+      await createProduction(prodNumber, prodName);
       setMessage("Production created successfully!");
     } catch (error) {
       console.error(error);
@@ -62,7 +62,7 @@ export default function Defi() {
 
   const handleSetProductName = async () => {
     try {
-      const result = await setProductName(pdtNumber, pdtName);
+      await setProductName(pdtNumber, pdtName);
       setMessage("Product Name successfully!");
     } catch (error) {
       console.error(error);
@@ -72,7 +72,7 @@ export default function Defi() {
 
   const handleSetQuantityProduced = async () => {
     try {
-      const result = await setQuantityProduced(qtdNumber, qtd);
+      await setQuantityProduced(qtdNumber, qtd);
       setMessage("Qtd Product successfully!");
     } catch (error) {
       console.error(error);
@@ -82,7 +82,7 @@ export default function Defi() {
 
   const handleSetDepartureDate = async () => {
     try {
-      const result = await setDepartureDate(depDateNumber, depDate);
+      await setDepartureDate(depDateNumber, depDate);
       setMessage("Departure date set successfully!");
     } catch (error) {
       console.error(error);
@@ -92,7 +92,7 @@ export default function Defi() {
 
   const handleSetArrivalDate = async () => {
     try {
-      const result = await setArrivalDate(arrDateNumber, arrDate);
+      await setArrivalDate(arrDateNumber, arrDate);
       setMessage("Arrival date set successfully!");
     } catch (error) {
       console.error(error);
@@ -103,7 +103,6 @@ export default function Defi() {
   const listProductionsByCompany = async (address) => {
     try {
       const result = await getProductionsByCompany(address);
-
       setProductionsByCompany(result);
     } catch (error) {
       console.error(error);
@@ -122,11 +121,59 @@ export default function Defi() {
     }
   };
 
+  function formatTimeFromSeconds(timestamp) {
+    var data = new Date(timestamp * 1000);
+
+    var horas = ("0" + data.getHours()).slice(-2);
+    var minutos = ("0" + data.getMinutes()).slice(-2);
+    var segundos = ("0" + data.getSeconds()).slice(-2);
+
+    var horaFormatada = horas + ":" + minutos + ":" + segundos;
+    return horaFormatada;
+  }
+
+  function converterBigNumberParaHora(bigNumber) {
+    var decimal = BigInt(bigNumber);
+
+    var horas = (decimal / 3600n) % 24n;
+    var minutos = (decimal / 60n) % 60n;
+    var segundos = decimal % 60n;
+
+    var horaFormatada =
+      padZeros(horas.toString()) +
+      ":" +
+      padZeros(minutos.toString()) +
+      ":" +
+      padZeros(segundos.toString());
+
+    return horaFormatada;
+  }
+
+  function padZeros(valor) {
+    return valor.padStart(2, "0");
+  }
+
   const TableListCompany = () => {
     if (productionsByCompany?.length > 0) {
-      return productionsByCompany.map((production, index) =>
-        handleMountTdTable(index, production)
-      );
+      return productionsByCompany.map((production, index) => (
+        <tr key={index}>
+          <td>{production?.company}</td>
+          <td>{production?.productName}</td>
+          <td>
+            {formatTimeFromSeconds(
+              ethers.BigNumber.from(production?.harvest).toString()
+            )}
+          </td>
+          <td>
+            {ethers.BigNumber.from(production?.productionNumber).toNumber()}
+          </td>
+          <td>
+            {ethers.BigNumber.from(production?.quantityProduced).toNumber()}
+          </td>
+          <td>{converterBigNumberParaHora(production?.DepartureDate)}</td>
+          <td>{converterBigNumberParaHora(production?.ArrivalDate)}</td>
+        </tr>
+      ));
     } else {
       return (
         <div>
@@ -138,8 +185,32 @@ export default function Defi() {
 
   const TableListNumber = () => {
     if (productionsByNumber?.length > 0) {
-      return productionsByNumber.map((production, index) =>
-        handleMountTdTable(index, production)
+      return (
+        <tr>
+          <td>{productionsByNumber?.company}</td>
+          <td>{productionsByNumber?.productName}</td>
+          <td>
+            {formatTimeFromSeconds(
+              ethers.BigNumber.from(productionsByNumber?.harvest).toString()
+            )}
+          </td>
+          <td>
+            {ethers.BigNumber.from(
+              productionsByNumber?.productionNumber
+            ).toNumber()}
+          </td>
+          <td>
+            {ethers.BigNumber.from(
+              productionsByNumber?.quantityProduced
+            ).toNumber()}
+          </td>
+          <td>
+            {converterBigNumberParaHora(productionsByNumber?.DepartureDate)}
+          </td>
+          <td>
+            {converterBigNumberParaHora(productionsByNumber?.ArrivalDate)}
+          </td>
+        </tr>
       );
     } else {
       return (
@@ -148,32 +219,6 @@ export default function Defi() {
         </div>
       );
     }
-  };
-
-  const handleMountTdTable = (index, production) => {
-    return (
-      <tr key={index}>
-        <td>{production?.company}</td>
-        <td>{production?.productName}</td>
-        <td>{ethers.BigNumber.from(production?.harvest).toString()}</td>
-        <td>
-          {ethers.BigNumber.from(production?.productionNumber).toNumber()}
-        </td>
-        <td>
-          {ethers.BigNumber.from(production?.quantityProduced).toNumber()}
-        </td>
-        <td>
-          {new Date(
-            ethers.BigNumber.from(production?.DepartureDate).toNumber() * 1000
-          ).toString()}
-        </td>
-        <td>
-          {new Date(
-            ethers.BigNumber.from(production?.ArrivalDate).toNumber() * 1000
-          ).toString()}
-        </td>
-      </tr>
-    );
   };
 
   return (
