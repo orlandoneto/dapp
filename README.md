@@ -1,4 +1,4 @@
-# Decentralized Voting dApp
+# Decentralized AgroSync
 
 A straightforward voting project utilizing smart contracts and blockchain.
 
@@ -6,18 +6,17 @@ A straightforward voting project utilizing smart contracts and blockchain.
 
 Tools utilized in the project:
 
-* [Metamask](https://metamask.io/) - Wallet
-* [Next.js](https://nextjs.org/docs/) - (Frontend) Voting dApp
-* [Solidity](https://docs.soliditylang.org/en/v0.8.24/) - (Backend) Construction of the Voting DEFI
-* [Remix](https://remix.ethereum.org/) - IDE for DEFI development
-* [BscScan](https://bscscan.com/) - Blockchain utilized for testnet
-* [BNB Faucet](https://www.bnbchain.org/en/testnet-faucet) - Testnet BNB Faucet
-* [Yarn](https://yarnpkg.com/) - Dependency manager
+- [Produtions](https://dapp-one.vercel.app/) dApp in production
+- [Metamask](https://metamask.io/) - Wallet
+- [Next.js](https://nextjs.org/docs/) - (Frontend) AgroSync
+- [Solidity](https://docs.soliditylang.org/en/v0.8.24/) - (Backend) Construction of the AgroSync DEFI
+- [Optimism](https://sepolia-optimism.etherscan.io/address/0x58fda51449837ac04f9543329e1edfb66326ccbd) - Blockchain utilized for testnet
+- [Yarn](https://yarnpkg.com/) - Dependency manager
 
 🔗 Link to Defi Used
 
-* [Github](https://github.com/orlandoneto/defi-voting/tree/main) - Defi Voting used
+- [Github](https://github.com/orlandoneto/dapp) - Defi AgroSync used
 
 ## ✒️ Author
 
-* **Orlando Neto** - [GitHub](https://github.com/orlandoneto)
+- **Orlando Neto** - [GitHub](https://github.com/orlandoneto)
